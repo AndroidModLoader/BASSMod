@@ -3,13 +3,11 @@
 
 #include <fstream>
 #include <stdint.h>
-#include <dlfcn.h>
-#include <thread>
 #include <ibass.h>
 
-MYMOD(net.rusjj.basslib, BASS Sound Library, 1.0, RusJJ)
+MYMOD(net.rusjj.basslib, BASS Sound Library, 1.1, RusJJ)
 BEGIN_DEPLIST()
-    ADD_DEPENDENCY_VER(net.rusjj.aml, 1.0.0.4)
+    ADD_DEPENDENCY_VER(net.rusjj.aml, 1.0.2.1)
 END_DEPLIST()
 
 std::string loadFrom;
@@ -17,8 +15,13 @@ std::string loadSSLFrom;
 uintptr_t pGTASA;
 extern IBASS* bass;
 
+#ifdef AML32
 extern unsigned char bassData[259924];
 extern unsigned char bass_sslData[1294584];
+#else
+extern unsigned char bassData[324856];
+extern unsigned char bass_sslData[1808720];
+#endif
 
 #include "bass_vars.h"
 
@@ -32,26 +35,26 @@ extern "C" void OnModPreLoad()
     loadFrom += "/bass_mod.so";
 
     std::ofstream fs(loadFrom.data(), std::ios::out | std::ios::binary);
-	fs.write((const char*)bassData, sizeof(bassData));
-	fs.close();
+    fs.write((const char*)bassData, sizeof(bassData));
+    fs.close();
     void* pBASSHandle = dlopen(loadFrom.data(), RTLD_NOW);
-    if(pBASSHandle == nullptr)
+    if(pBASSHandle == NULL)
     {
         logger->Error("Failed to load BASS library!");
         return;
     }
     std::ofstream fs_ssl(loadSSLFrom.data(), std::ios::out | std::ios::binary);
-	fs_ssl.write((const char*)bass_sslData, sizeof(bass_sslData));
-	fs_ssl.close();
+    fs_ssl.write((const char*)bass_sslData, sizeof(bass_sslData));
+    fs_ssl.close();
 
         #include "bass_things.h"
     
     logger->Info("Trying to initialize BASS...");
-	BASS_SetConfigPtr(BASS_CONFIG_NET_AGENT, "BASS/AML_Mod/1.0.0.0");
+    BASS_SetConfigPtr(BASS_CONFIG_NET_AGENT, "BASS/AML_Mod/1.1.0.0");
     BASS_SetConfigPtr(BASS_CONFIG_LIBSSL, loadSSLFrom.data());
-	BASS_SetConfig(BASS_CONFIG_NET_PLAYLIST, 1);
-	BASS_SetConfig(BASS_CONFIG_NET_TIMEOUT, 10000);
-	if (!BASS_Init(-1, 44100, 0))
+    BASS_SetConfig(BASS_CONFIG_NET_PLAYLIST, 1);
+    BASS_SetConfig(BASS_CONFIG_NET_TIMEOUT, 10000);
+    if (!BASS_Init(-1, 44100, 0))
     {
         logger->Error("Failed to initialize BASS library! Error Code: %d", BASS_ErrorGetCode());
         return;
