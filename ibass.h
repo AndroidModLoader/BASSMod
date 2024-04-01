@@ -585,3 +585,17 @@ public:
 #define BASS_INPUT_TYPE_AUX			0x09000000
 #define BASS_INPUT_TYPE_ANALOG		0x0a000000
 
+// 3D channel modes
+#define BASS_3DMODE_NORMAL		0	// normal 3D processing
+#define BASS_3DMODE_RELATIVE	1	// position is relative to the listener
+#define BASS_3DMODE_OFF			2	// no 3D processing
+
+// software 3D mixing algorithms (used with BASS_CONFIG_3DALGORITHM)
+#define BASS_3DALG_DEFAULT	0
+#define BASS_3DALG_OFF		1
+#define BASS_3DALG_FULL		2
+#define BASS_3DALG_LIGHT	3
+
+// BASS_SampleGetChannel flags
+#define BASS_SAMCHAN_NEW		1	// get a new playback channel
+#define BASS_SAMCHAN_STREAM		2	// create a stream
